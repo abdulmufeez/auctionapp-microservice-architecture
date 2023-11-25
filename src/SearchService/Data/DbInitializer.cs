@@ -24,22 +24,30 @@ public class DbInitializer
             .Key(x => x.Color, KeyType.Text)
             .CreateAsync();
 
-        if (await DB.CountAsync<Item>() == 0)
-        {
-            var itemData = await File.ReadAllTextAsync("Data/auctions.json");
+        // if (await DB.CountAsync<Item>() == 0)
+        // {
+        //     var itemData = await File.ReadAllTextAsync("Data/auctions.json");
 
-            if (string.IsNullOrEmpty(itemData))
-            {
-                var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        //     if (string.IsNullOrEmpty(itemData))
+        //     {
+        //         var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-                var items = JsonSerializer.Deserialize<List<Item>>(itemData, opts);
+        //         var items = JsonSerializer.Deserialize<List<Item>>(itemData, opts);
 
-                await DB.SaveAsync(items);
-            }
-        }
-        else
-        {
-            Console.WriteLine("Db initilzed and no need to seed data...");
-        }
+        //         await DB.SaveAsync(items);
+        //     }
+        // }
+        // else
+        // {
+        //     Console.WriteLine("Db initilzed and no need to seed data...");
+        // }
+
+        using var scope = app.Services.CreateScope();
+        var httpClient = scope.ServiceProvider.GetRequiredService<AuctionSvcHttpClient>();
+        var items = await httpClient.GetItemsForSearchDb();
+
+        Console.WriteLine($"{items.Count} entities return from Auction Service");
+
+        if(items.Count > 0) await DB.SaveAsync(items);
     }
 }
