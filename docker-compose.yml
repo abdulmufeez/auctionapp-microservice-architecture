@@ -7,6 +7,5 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - mongodata:/var/lib/mongodb/data
-volumes:
-  mongodata:
+      ## Giving anonymous volumes (volumes without name like this -mongodata:)
+      - /var/lib/mongodb/data
