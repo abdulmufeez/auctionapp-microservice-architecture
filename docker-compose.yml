@@ -1,4 +1,4 @@
-services: ## all your services need to be down below services as if you want to run multi container simultaneously
+services:
   postgres: ## this will be your service name
     image: postgres ## this is image which will run in container
     environment:  ## in this section you will write all the things necessary when run a container
@@ -7,6 +7,23 @@ services: ## all your services need to be down below services as if you want to 
       - 5432:5432
     volumes: ## this tag is used when you want acquire space from the os
       - pgdata:/var/lib/postgresql/data
+  mongodb:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=mongopw
+    ports:
+      - 27017:27017
+    volumes:
+      ## Giving anonymous volumes (volumes without name like this -mongodata:)
+      - /var/lib/mongodb/data
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+    ## default running port of rabbitmq
+      - 5672:5672
+    ## for management console/portal of rabbitmq
+      - 15672:15672
 
 volumes: ## Specify all volumes here used in your multi containers app
   pgdata:
